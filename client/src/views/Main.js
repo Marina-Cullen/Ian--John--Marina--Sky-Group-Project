@@ -1,6 +1,4 @@
-import React, { useState } from 'react'
-// import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
+import React from 'react';
 import AuthComponent from '../components/Auth';
 
 const Main = (props) => {

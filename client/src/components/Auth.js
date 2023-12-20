@@ -27,7 +27,7 @@ const AuthComponent = () => {
 
     const handleRegister = async () => {
         try {
-        const response = await axios.post('/register', registrationData);
+        const response = await axios.post('/users/register', registrationData);
 
         console.log(response.data); 
         navigate('/home');
