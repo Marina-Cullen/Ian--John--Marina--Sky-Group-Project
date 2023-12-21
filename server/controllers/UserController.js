@@ -8,16 +8,12 @@ const UserController = {
     register: async (req, res) => {
         try {
             const { first_name, last_name, alias, email, password } = req.body;
-            console.log("registration data received:", req.body);
-            
             const existingUser = await User.findOne({ where: { email } });
             if (existingUser) {
                 return res.status(400).json({ message: "Email already in use." });
             }
-            
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
-            
             const newUser = await User.create({
                 first_name,
                 last_name,
@@ -25,7 +21,10 @@ const UserController = {
                 email,
                 password: hashedPassword
             });
-            
+
+            const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+
             res.status(201).json({
                 message: "User registered successfully.",
                 user: {
@@ -36,7 +35,8 @@ const UserController = {
                     email: newUser.email,
                     createdAt: newUser.createdAt,
                     updatedAt: newUser.updatedAt
-                }
+                },
+                token, // Ensure that the token is included in the response
             });
             
         } catch (error) {
@@ -50,7 +50,7 @@ const UserController = {
             res.status(500).json({ message: "Error registering new user." });
         }
     },
-
+    // User login
     login: async (req, res) => {
         try {
             const { email, password } = req.body;
@@ -84,6 +84,21 @@ const UserController = {
         }
     },
 
+    // Get user profile
+    getUserProfile: async (req, res) => {
+        try {
+            const user = await User.findByPk(req.user.id, {
+                attributes: { exclude: ['password'] }
+            });
+            if (!user) {
+                return res.status(404).json({ message: "User not found." });
+            }
+            res.json(user);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Error fetching user profile." });
+        }
+    },
 };
 
 module.exports = UserController;

@@ -18,6 +18,8 @@ const AuthComponent = () => {
         password: '',
     });
 
+    const [user, setUser] = useState(null);  // Define the user state
+
     const handleRegistrationInputChange = (e) => {
         setRegistrationData({ ...registrationData, [e.target.name]: e.target.value });
     };
@@ -31,22 +33,40 @@ const AuthComponent = () => {
         try {
             const response = await axios.post('http://localhost:5000/users/register', registrationData);
             console.log(response.data);
+
+            const { token, user: userInfo } = response.data;
+
+            // Store the token in local storage
+            localStorage.setItem('authToken', token);
+
+            // Update the state to store the user information
+            setUser(userInfo);
+
+            // Navigate to the home page
             navigate('/home');
         } catch (error) {
             console.error('Error registering user:', error);
         }
     };
-    
+
     const handleLogin = async () => {
         console.log("Login Data:", loginData);
         try {
             const response = await axios.post('http://localhost:5000/users/login', loginData);
             console.log(response.data);
+            const { token, user: userInfo } = response.data;
+    
+            // Store the token in local storage
+            localStorage.setItem('authToken', token);
+    
+            // Set the user state
+            setUser(userInfo);
+    
+            navigate('/home');
         } catch (error) {
             console.error('Error logging in:', error);
         }
     };
-    
 
 
     return (

@@ -2,12 +2,36 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Button } from 'bootstrap';
 
 const HomePage = () => {
     const [formData, setFormData] = useState({
         image: null,
         description: '',
     });
+
+    const navigate = useNavigate;
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        // Fetch user data after component mounts
+        const fetchUserData = async () => {
+            try {
+            const token = localStorage.getItem('authToken');
+            console.log("Token:", token) // Replace with your actual token key
+            const response = await axios.get('http://localhost:5000/users/profile', {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                },
+            });
+            setUserName(response.data.first_name);
+            } catch (error) {
+            console.error('Error fetching user data:', error);
+            }
+        };
+        
+        fetchUserData(); // If you are using the function
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,6 +48,15 @@ const HomePage = () => {
         }
     };
 
+
+    const handleLogout = () => {
+        // Clear the authentication token from local storage
+        localStorage.removeItem('authToken');
+        
+        // Redirect the user to the login page
+        window.location.href = '/';
+    };
+
     const handleChange = (e) => {
         const { name, value, files } = e.target;
 
@@ -36,11 +69,11 @@ const HomePage = () => {
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center p-2 border border-solid border-dark">
-                <h2>Hi, User</h2>
+            <h2>Hi, {userName}</h2>
                 <div className='p-1 text-end'>
                 <Link to="/bright-ideas" className="me-3">Bright Ideas</Link>
                 <Link to="/profile" className="me-3">Profile</Link>
-                <Link to="/logout">Logout</Link>
+                <button onClick={handleLogout} className='btn btn-danger'>Logout</button>
                 </div>
             </div>
             <div className='mb-3'>

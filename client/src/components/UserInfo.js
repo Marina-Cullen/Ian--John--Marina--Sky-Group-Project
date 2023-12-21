@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 
 const UserInfo = (props) => {
- 
+
     return (
         <div>
             <header>
