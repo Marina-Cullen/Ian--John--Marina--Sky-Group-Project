@@ -12,7 +12,6 @@ createIdea: async (req, res) => {
 
     const newIdea = await IdeaModel.create({
         ideas,
-        image,
         userId
     });
 
