@@ -4,6 +4,7 @@ const cors = require('cors');
 const sequelize = require('./config/sequelize.config');
 const userRoutes = require('./routes/User.routes');
 const ideaRoutes = require('./routes/Idea.routes');
+const likeRoutes = require('./routes/Like.routes');
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 // Updated imported routes
 app.use('/users', userRoutes);
 app.use('/api', ideaRoutes); 
+app.use('/likes', likeRoutes);
 
 sequelize.sync().then(() => {
     const PORT = process.env.PORT || 3000;
