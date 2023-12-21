@@ -7,7 +7,7 @@ const UserController = {
     // Registering a new user
     register: async (req, res) => {
         try {
-            const { name, alias, email, password } = req.body;
+            const { first_name, last_name, alias, email, password } = req.body;
             const existingUser = await User.findOne({ where: { email } });
             if (existingUser) {
                 return res.status(400).json({ message: "Email already in use." });
@@ -15,21 +15,28 @@ const UserController = {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
             const newUser = await User.create({
-                name,
+                first_name,
+                last_name,
                 alias,
                 email,
                 password: hashedPassword
             });
+
+            const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+
             res.status(201).json({
                 message: "User registered successfully.",
                 user: {
                     id: newUser.id,
-                    name: newUser.name,
+                    first_name: newUser.first_name,
+                    last_name: newUser.last_name,
                     alias: newUser.alias,
                     email: newUser.email,
                     createdAt: newUser.createdAt,
                     updatedAt: newUser.updatedAt
-                }
+                },
+                token, // Ensure that the token is included in the response
             });
             
         } catch (error) {
@@ -64,7 +71,8 @@ const UserController = {
                 token,
                 user: {
                     id: user.id,
-                    name: user.name,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
                     alias: user.alias,
                     email: user.email
                 }

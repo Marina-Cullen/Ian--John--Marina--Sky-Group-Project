@@ -4,3 +4,8 @@
   box-sizing: border-box;
 }
 
+body{
+  text-align:center;
+  background-color: darkslategrey;
+  color:ivory;
+}

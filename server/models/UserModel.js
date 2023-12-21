@@ -10,10 +10,13 @@ last_name: {
     type: DataTypes.STRING(55),
     allowNull: true,
 },
+<<<<<<< HEAD
 name: {
     type: DataTypes.STRING(255),
     allowNull: true,
 },
+=======
+>>>>>>> upstream/main
 alias: {
     type: DataTypes.STRING(45),
     allowNull: false,

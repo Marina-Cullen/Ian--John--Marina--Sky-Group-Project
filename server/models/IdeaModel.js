@@ -6,7 +6,11 @@ id: {
     primaryKey: true,
     autoIncrement: true
 },
+<<<<<<< HEAD
 ideas: {
+=======
+    ideas: {
+>>>>>>> upstream/main
     type: DataTypes.STRING(255),
     allowNull: false
 },
