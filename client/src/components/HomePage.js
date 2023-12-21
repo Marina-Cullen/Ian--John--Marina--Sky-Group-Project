@@ -1,26 +1,79 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
     const [formData, setFormData] = useState({
         image: null,
-        description: '',
+        ideas: '', 
     });
+
+    const navigate = useNavigate;
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        // Fetch user data after component mounts
+        const fetchUserData = async () => {
+            try {
+            const token = localStorage.getItem('authToken');
+            console.log("Token:", token) 
+            const response = await axios.get('http://localhost:5000/users/profile', {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                },
+            });
+            setUserName(response.data.first_name);
+            localStorage.setItem('userId', response.data.id); 
+
+            } catch (error) {
+            console.error('Error fetching user data:', error);
+            }
+        };
+        
+        fetchUserData(); 
+    }, []);
+
+    const [ideas, setIdeas] = useState([]);
+
+    useEffect(() => {
+        const fetchIdeas = async () => {
+        try {
+        const response = await axios.get('http://localhost:5000/ideas');
+        setIdeas(response.data);
+        } catch (error) {
+        console.error('Error fetching ideas:', error);
+        }
+    };
+
+    fetchIdeas();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const formDataToSend = new FormData();
         formDataToSend.append('image', formData.image);
-        formDataToSend.append('description', formData.description);
-
+        formDataToSend.append('ideas', formData.ideas); // Change 'description' to 'ideas'
+        formDataToSend.append('userId', localStorage.getItem('userId'));
+    
         try {
-        const response = await axios.post('/api/submit', formDataToSend);
-        console.log(response.data); // Handle the response as needed
+            const response = await axios.post('http://localhost:5000/ideas', formDataToSend, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                },
+            });
+    
+            console.log(response.data);
+            setIdeas((prevIdeas) => [...prevIdeas, response.data]);
         } catch (error) {
-        console.error('Error submitting form:', error);
+            console.error('Error submitting form:', error);
         }
+    };
+        
+    const handleLogout = () => {
+        localStorage.removeItem('authToken');
+        window.location.href = '/';
     };
 
     const handleChange = (e) => {
@@ -34,12 +87,11 @@ const HomePage = () => {
 
     return (
         <div>
-            <div className="d-flex justify-content-between align-items-center p-2 border border-solid border-dark">
-                <h2>Hi, User</h2>
+            <div className="d-flex justify-content-between align-items-center border border-solid border-dark">
+            <h2>Hi, {userName}</h2>
                 <div className='p-1 text-end'>
-                <Link to="/bright-ideas" className="me-3">Bright Ideas</Link>
-                <Link to="/profile" className="me-3">Profile</Link>
-                <Link to="/logout">Logout</Link>
+                <Link to={`/users/${localStorage.getItem('userId')}`} className="btn btn-primary m-2">Profile</Link>
+                <button onClick={handleLogout} className='btn btn-danger'>Logout</button>
                 </div>
             </div>
             <div className='mb-3'>
@@ -53,7 +105,8 @@ const HomePage = () => {
             </h5>
             </div>
 
-            <div className='col-5 my-auto mx-auto m-4' id='newpost'>
+            <div className='col-5 my-auto mx-auto m-4 p-5 border border-solid border-dark text-center' id='newidea'>
+                <h3>Add an Idea</h3>
                 <form onSubmit={handleSubmit}>
 
                     <div className='mb-3'>
@@ -72,15 +125,15 @@ const HomePage = () => {
 
                     <div className='mb-3'>
                         <label htmlFor='description' className='form-label'>
-                            Description:
+                            Story Idea:
                         </label>
                         <textarea
                             className='form-control'
-                            id='description'
-                            name='description'
-                            value={formData.description}
+                            id='ideas'
+                            name='ideas'
+                            value={formData.ideas}
                             onChange={handleChange}
-                            placeholder='Add your description here!'
+                            placeholder='Add your new story idea here!'
                         />
                     </div>
 
@@ -88,6 +141,14 @@ const HomePage = () => {
                     Submit
                     </button>
                 </form>
+            </div>
+            <div className="mt-4 my-auto mx-auto">
+                <h3 className='text-center'>All Story Ideas:</h3>
+                <ul>
+                {ideas.map((idea) => (
+                    <li key={idea.id}>{idea.ideas}</li>
+                ))}
+                </ul>
             </div>
         </div>
     );

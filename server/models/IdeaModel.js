@@ -6,7 +6,7 @@ id: {
     primaryKey: true,
     autoIncrement: true
 },
-    ideas: {
+ideas: {
     type: DataTypes.STRING(255),
     allowNull: false
 },
