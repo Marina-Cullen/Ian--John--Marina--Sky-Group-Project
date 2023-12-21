@@ -1,5 +1,4 @@
 const IdeaModel = require('../models/IdeaModel');
-
 const IdeaController = {
   // Create
 createIdea: async (req, res) => {
@@ -9,19 +8,15 @@ createIdea: async (req, res) => {
     if (req.file) {
         image = req.file.path;
     }
-
     const newIdea = await IdeaModel.create({
         ideas,
-        image,
         userId
     });
-
     res.status(201).json(newIdea);
     } catch (error) {
     res.status(500).json({ error: error.message });
     }
 },
-
   // Show all idea
 getAllIdeas: async (req, res) => {
     try {
@@ -31,7 +26,6 @@ getAllIdeas: async (req, res) => {
     res.status(500).json({ error: error.message });
     }
 },
-
   //Show one Idea from one id
 getIdeaById: async (req, res) => {
     try {
@@ -45,7 +39,6 @@ getIdeaById: async (req, res) => {
     res.status(500).json({ error: error.message });
     }
 },
-
   // Update an idea by ID
 updateIdea: async (req, res) => {
     try {
@@ -59,20 +52,17 @@ updateIdea: async (req, res) => {
         where: { id: req.params.id },
         returning: true // for MySQL, you'd need to re-query the DB
     });
-
     res.status(200).json(updatedIdea);
     } catch (error) {
     res.status(500).json({ error: error.message });
     }
 },
-
   // Delete by id
 deleteIdea: async (req, res) => {
     try {
     await IdeaModel.destroy({
         where: { id: req.params.id }
     });
-
     res.status(200).json({ message: 'Idea deleted successfully' });
     } catch (error) {
     res.status(500).json({ error: error.message });

@@ -6,8 +6,7 @@ const AuthComponent = () => {
     const navigate = useNavigate();
 
     const [registrationData, setRegistrationData] = useState({
-        first_name: '',
-        last_name: '',
+        name: '',
         alias: '',
         email: '',
         password: '',
@@ -18,55 +17,34 @@ const AuthComponent = () => {
         password: '',
     });
 
-    const [user, setUser] = useState(null);  // Define the user state
-
     const handleRegistrationInputChange = (e) => {
         setRegistrationData({ ...registrationData, [e.target.name]: e.target.value });
     };
-    
+
     const handleLoginInputChange = (e) => {
         setLoginData({ ...loginData, [e.target.name]: e.target.value });
     };
-    
+
     const handleRegister = async () => {
-        console.log("Registration Data:", registrationData);
         try {
-            const response = await axios.post('http://localhost:5000/users/register', registrationData);
-            console.log(response.data);
+        const response = await axios.post('/users/register', registrationData);
 
-            const { token, user: userInfo } = response.data;
-
-            // Store the token in local storage
-            localStorage.setItem('authToken', token);
-
-            // Update the state to store the user information
-            setUser(userInfo);
-
-            // Navigate to the home page
-            navigate('/home');
+        console.log(response.data); 
+        navigate('/home');
         } catch (error) {
-            console.error('Error registering user:', error);
+        console.error('Error registering user:', error);
         }
     };
 
     const handleLogin = async () => {
-        console.log("Login Data:", loginData);
         try {
-            const response = await axios.post('http://localhost:5000/users/login', loginData);
-            console.log(response.data);
-            const { token, user: userInfo } = response.data;
-    
-            // Store the token in local storage
-            localStorage.setItem('authToken', token);
-    
-            // Set the user state
-            setUser(userInfo);
-    
-            navigate('/home');
+        const response = await axios.post('/login', loginData);
+        console.log(response.data); 
         } catch (error) {
-            console.error('Error logging in:', error);
+        console.error('Error logging in:', error);
         }
     };
+
 
 
     return (
@@ -80,25 +58,13 @@ const AuthComponent = () => {
                     <form>
                         <div className="mb-3">
                             <label htmlFor="name" className="form-label">
-                            First Name:
+                            Name:
                             </label>
                             <input
                             type="text"
                             className="form-control"
-                            id="first_name"
-                            name="first_name"
-                            onChange={handleRegistrationInputChange}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="name" className="form-label">
-                            Last Name:
-                            </label>
-                            <input
-                            type="text"
-                            className="form-control"
-                            id="last_name"
-                            name="last_name"
+                            id="name"
+                            name="name"
                             onChange={handleRegistrationInputChange}
                             />
                         </div>
